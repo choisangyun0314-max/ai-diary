@@ -42,7 +42,6 @@ npm install ai @ai-sdk/react @ai-sdk/google zod
 
 프롬프트:
 
-AIzaSyBXV5tvdxmt9NQ6nYKSM22wRqY8w1MFjEM
 발급받은 gemini api key를 GOOGLE_GENERATIVE_AI_API_KEY에 할당하고 .env.local 파일에 저장해줘.
 ---------------------------------------------------------------------------------------------------
 프롬프트:
