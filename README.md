@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+* 기능 와이어 프레임
 
-## Getting Started
+구글 프레젠테이션으로 '일기 AI 감성 분석' 디자인 초안 잡기
+---------------------------------------------------------------------------------------------------
+* 스티치 바이브 디자인
 
-First, run the development server:
+와이어프레임을 이용하여 스티치에서 바이브 디자인 실시
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+프롬프트:
+사용자가 [일기 작성 영역]에 일기를 작성하고 [AI 분석 버튼]을 누르면 gemini-3.1-flash-lite-preview에 접속하여 텍스트 감성 분석을 실시한 후 [감성 이모지 영역]에 5개의 감성 중 하나를 더 강조하도록 하고 [AI 일기 감성 분석 결과] 영역에 gemini가 일기를 분석한 결과 텍스트를 나타내도록 한다.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+디자인 시스템은 Google Material Design 사용
+밝고 모던한 톤으로 디자인 실시
+시안 3개 제시
+---------------------------------------------------------------------------------------------------
+* 빈 폴더 만들기 (폴더 이름은 모두 소문자)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+'diary-ai-sentiments'로 이름 수정
+---------------------------------------------------------------------------------------------------
+* Next.js 기반 코드 베이스 구축
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npx create-next-app@latest .
+---------------------------------------------------------------------------------------------------
+* 코드 수정
 
-## Learn More
+---------------------------------------------------------------------------------------------------
+* 기본 화면 구성
 
-To learn more about Next.js, take a look at the following resources:
+프롬프트:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ScreenDesign.png를 바탕으로
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+사용자가 [일기 작성 영역]에 일기를 작성하고 [AI 분석 버튼]을 누르면 gemini-3.1-flash-lite-preview에 접속하여 텍스트 감성 분석을 실시한 후 [감성 이모지 영역]에 5개의 감성 중 하나를 더 강조하도록 하고 [AI 일기 감성 분석 결과] 영역에 gemini가 일기를 분석한 결과 텍스트를 나타내도록 한다. 첨부한 이미지를 참고하여 만들어줘
 
-## Deploy on Vercel
+아직 gemini는 연동하지 않을거야.
+---------------------------------------------------------------------------------------------------
+* AI 툴킷 설치
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+npm install ai @ai-sdk/react @ai-sdk/google zod
+---------------------------------------------------------------------------------------------------
+* gemini api key 발급받기
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+프롬프트:
+
+AIzaSyBXV5tvdxmt9NQ6nYKSM22wRqY8w1MFjEM
+발급받은 gemini api key를 GOOGLE_GENERATIVE_AI_API_KEY에 할당하고 .env.local 파일에 저장해줘.
+---------------------------------------------------------------------------------------------------
+프롬프트:
+gemini-3.1-flash-lite-preview 모델을 연동해서 일기에 대한 감성 이모지와 텍스트 감성 분석을 기능을 만들어줘.
+---------------------------------------------------------------------------------------------------
+프롬프트:
+gemini를 통해 일기의 제목을 자동으로 생성해서 이모지 영역 위에 만들어줘.
+---------------------------------------------------------------------------------------------------
+프롬프트:
+[재시작]과 [저장] 버튼을 적당한 위치에 만들어줘.
+---------------------------------------------------------------------------------------------------
+* 구글 시트 설정
+
+- 구글 드라이브에서 구글 시트 만들기
+- 필요한 필드 만들기
+- 해당 구글 시트에서 [파일]-[공유]-[다른 사용자와 공유]-[링크가 있는 모든 사용자] 설정
+- [링크 복사] 클릭
+
+https://docs.google.com/spreadsheets/d/1E5KAt8xo4eHQdItTcF6orolnx1fcp04Es3ETqglaSJM/edit?usp=sharing
+
+해당 구글 시트에는 datetime, diary 필드가 구성되어 있어. 저장 버튼을 누르면 해당 링크의 구글 시트에 일기 작성 시간과 일기 내용을 저장하는 apps script를 만들어줘.
+
+(apps script를 구글 시트의 확장 프로그램에 붙여넣고 저장 후, 새 배포 수행)
+---------------------------------------------------------------------------------------------------
+* 구글 시트의 확장 프로그램 메뉴를 누르고
+
+- 스크립트 이름 지정: 여기서는 Diary_AI_Sentiments_Analyzer
+- 안티그래비티에서 생성한 스크립트 붙여넣기
+
+프롬프트:
+
+웹앱 URL
+https://script.google.com/macros/s/AKfycbz-MtxbhiSOXbkT_4hX5PisGwjkzLNckulXTwaQZH2FORQbnNKSQW26LA3s4Lm4jWTf/exec
+
+웹앱 URL을 .env.local 파일에 등록하고 적용해줘.
+
+일기를 구글 시트에 저장하면 초기 화면으로 나타내줘.
+---------------------------------------------------------------------------------------------------
+* 메인 화면 수정
+
+프롬프트:
+메인 화면 오른쪽 상단에 있는 [일기 목록] 버튼을 누르면 구글 시트에서 datetime 필드와 diary의 내용 일부를 가져와서 나열하는 기능을 추가해줘. 일기 목록은 별도의 모달 화면을 띄워서 구성하고 특정 일기를 선택하면 날짜는 메인화면의 날짜 영역에, 해당 일기는 일기 작성 영역에 나타내줘.
+
+이러한 기능을 수행하는 apps script도 만들어줘.
+
+(apps script를 구글 시트의 확장 프로그램에 붙여넣고 저장 후, 새 배포 수행)
+---------------------------------------------------------------------------------------------------
+* 웹앱 URL을 .env.local 파일에 등록
+---------------------------------------------------------------------------------------------------
+* GitHub 업로드 전에 코드 베이스 정리
+
+npm run build
+
+---------------------------------------------------------------------------------------------------
+* GitHub 최종 업로드
+
+git config --global user.email "choisangyun0314@gmail.com"
+git config --global user.name "choisangyun0314-max"
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/choisangyun0314-max/ai-diary.git
+git push -u origin main
+
+깃허브 연동해줘
+---------------------------------------------------------------------------------------------------
+* vercel 배포
+
+---------------------------------------------------------------------------------------------------
+* localhost 3000 포트를 사용하고 있을 때 터미널에서
+
+netstat -ano | findstr :3000
+taskkill /PID [위에서 나온 PID번호] /F
