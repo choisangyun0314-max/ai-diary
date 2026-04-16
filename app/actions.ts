@@ -2,6 +2,80 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+/** 구글 시트에 일기 저장 (서버 전용) */
+export async function saveToSheet(diary: string) {
+  let gasUrl = process.env.APPS_SCRIPT_URL;
+  if (!gasUrl) {
+    console.error("APPS_SCRIPT_URL is missing in .env.local");
+    throw new Error("구글 시트 연동 주소가 설정되지 않았습니다.");
+  }
+
+  // URL 끝에 /exec가 없는 경우 자동으로 추가
+  if (gasUrl.endsWith("/")) {
+    gasUrl += "exec";
+  } else if (!gasUrl.endsWith("/exec")) {
+    gasUrl += "/exec";
+  }
+
+  try {
+    const response = await fetch(gasUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        datetime: new Date().toISOString(),
+        diary: diary,
+      }),
+    });
+
+    // Apps Script의 doPost는 보안상 opaque 응답이 올 수 있으므로 ok 체크와 함께 예외 처리
+    if (!response.ok && response.type !== 'opaque') {
+      throw new Error(`저장 실패 (상태 코드: ${response.status})`);
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Save to Sheet Error:", error);
+    throw new Error(error?.message || "구글 시트 저장 중 오류가 발생했습니다.");
+  }
+}
+
+/** 구글 시트에서 일기 목록 가져오기 (서버 전용) */
+export async function getDiaryList() {
+  let gasUrl = process.env.APPS_SCRIPT_URL;
+  if (!gasUrl) {
+    console.error("APPS_SCRIPT_URL is missing in .env.local");
+    throw new Error("구글 시트 연동 주소가 설정되지 않았습니다.");
+  }
+
+  // URL 끝에 /exec가 없는 경우 자동으로 추가
+  if (gasUrl.endsWith("/")) {
+    gasUrl += "exec";
+  } else if (!gasUrl.endsWith("/exec")) {
+    gasUrl += "/exec";
+  }
+
+  try {
+    const response = await fetch(gasUrl, { 
+      method: "GET",
+      cache: 'no-store' // 항상 최신 데이터를 가져오기 위해 캐싱 방지
+    });
+
+    if (!response.ok) {
+      throw new Error(`불러오기 실패 (상태 코드: ${response.status})`);
+    }
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    return data as { datetime: string; diary: string }[];
+  } catch (error: any) {
+    console.error("Get Diary List Error:", error);
+    throw new Error(error?.message || "일기 목록을 가져오는 중 오류가 발생했습니다.");
+  }
+}
+
 export async function analyzeDiary(text: string) {
   if (!text) throw new Error("Text is required");
 
